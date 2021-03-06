@@ -12,11 +12,12 @@
  * ex)
  * 
  * Input
- * arr = { 1, 2, 3, 4, 5 };
- * num_query = 2;
- * query = { { 2,  3}, { 1, 4 } };
+ *      arr = { 1, 2, 3, 4, 5 };
+ *      num_query = 2;
+ *      query = { { 2,  3}, { 1, 4 } };
  *
- * Output = { { 5 }, { 10 }};    // ( 2 + 3 ), ( 1 + 2 + 3 + 4 )
+ * Output
+ *      result = { { 5 }, { 10 }};    // ( 2 + 3 ), ( 1 + 2 + 3 + 4 )
  * 
  *
  * 제약조건 :
@@ -24,9 +25,6 @@
  * arr.size < 10000000
  *
  */
-
-// (1 ~ n -1) : test case time 
-
 
 #include <stdio.h>
 #include <vector>

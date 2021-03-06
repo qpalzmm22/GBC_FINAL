@@ -5,10 +5,11 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
-#define BUF_SIZE 200
+#define BUF_SIZE 300
+#define NUM_PROBLEMS 5
+#define TIME_LIMIT 30
+#define PASSWORD "213131"
 #define END_MESSAGE "FINISH"
-#define YES "y"
-
 
 void error_handling(char *message);
 
@@ -25,19 +26,27 @@ void error_handling(char *message){
 //      (if not correct send previous question)
 
 int question(char* quest, char* ans, int sock, struct sockaddr_in client_adr){
-        int str_len;
-        int valid_test = 0;
-        char message[BUF_SIZE];
-        socklen_t client_adr_size = sizeof(client_adr);
-    
-        sendto(sock, quest, strlen(quest), 0, (struct sockaddr*)&client_adr, sizeof(client_adr)); 
-        //q1 ans recieved
-        str_len = recvfrom(sock, message, BUF_SIZE, 0, (struct sockaddr*)&client_adr, &client_adr_size);  // ready to recieve data from client
-       
-        if(strncmp(message, ans, str_len) == 0)   // if the recieved message was "ans"
-            valid_test = 1; 
+    int str_len;
+    int valid_test = 0x0;
+    char message[BUF_SIZE];
+    socklen_t client_adr_size = sizeof(client_adr);
 
-        return valid_test; 
+
+    sendto(sock, quest, strlen(quest), 0, (struct sockaddr*)&client_adr, sizeof(client_adr)); 
+    str_len = recvfrom(sock, message, BUF_SIZE, 0, (struct sockaddr*)&client_adr, &client_adr_size);  // ready to recieve data from client
+
+    if( str_len < 0 ){
+
+        char error_message[100] = { 0x0 };
+        sprintf(error_message, "No Response for %d Seconds.\nQuitting the Server Program", TIME_LIMIT);
+        error_handling(error_message);
+    }
+
+
+    if(strncmp(message, ans, str_len) == 0)   // if the recieved message was "ans"
+        valid_test = 1; 
+
+    return valid_test; 
 }
 
 int main(int argc, char *argv[]){
@@ -48,10 +57,36 @@ int main(int argc, char *argv[]){
 
     socklen_t client_adr_size;
     int str_len;
-    
+
+
     // needs to initialized to 0
-    int ready;
-    int valid1, valid2, valid3, valid4, valid5;
+    int valid[NUM_PROBLEMS];
+
+    char* instruction = "\n클라이언트 프로그램을 성공적으로 만드셨군요! 축하합니다.\n이제 다음의 다섯 문제를 푼다면 다음 문제의 암호를 주도록하죠.\n각 문제를 푸는데 30초가 지나면 자동으로 서버가 종료됩니다! 서두르세요!\n";
+
+    char* q_array[NUM_PROBLEMS];
+    char* ans_array[NUM_PROBLEMS];
+
+    int is_correct[NUM_PROBLEMS];
+
+    int cur_problem_num;
+
+    q_array[0] = "\n1. 한 대의 스위치를 여러개의 네트워크로 나누기 위해 사용하는 기술은?\n 답 : _______ LAN\n";
+    q_array[1] = "\n2. 목적지와 목적지로 가려면 어느 인터페이스로 가야 하는지의 정보는 Routing _____ 에 기록된다.\n";
+    q_array[2] = "\n3. 목적지까지의 거리와 어떤 인접 라우터를 거쳐서 가야하는 지를 저장하는 Vector.\n 답 : ________ Vector\n";
+    q_array[3] = "\n4. Link state를 사용하는 Routing Protocol은?\n 답 : ____\n";
+    q_array[4] = "\n5. 출발지에서 목적지 뿐만 아니라 중간 경로에 대한 정보와 소요시간을 확인해주는 프로그램의 이름은?\n 답 : _____\n";
+
+    ans_array[0] = "virtual";
+    ans_array[1] = "table";
+    ans_array[2] = "distance";
+    ans_array[3] = "ospf";
+    ans_array[4] = "trace";
+
+    struct timeval tv;
+
+    tv.tv_sec = TIME_LIMIT;
+    tv.tv_usec = 0;
 
     if(argc != 2){
         printf("Usage : %s <port>\n", argv[0]);
@@ -70,45 +105,38 @@ int main(int argc, char *argv[]){
     if(bind(host_sock, (struct sockaddr*) &host_adr, sizeof(host_adr)) == -1)   // binding
         error_handling("bind() error");
 
+
+    // connect to the client. Trying to recieve.
     client_adr_size = sizeof(client_adr);
-    // Signal to identify the client
-    str_len = recvfrom(host_sock, message, BUF_SIZE, 0, (struct sockaddr*)&client_adr, &client_adr_size);  // ready to recieve data from client
 
-    if(strncmp(message, YES, str_len) == 0){   // if the recieved message was "YES"
-        ready = 1;
-    }
+    // repeat until all answers are correct
+    while(1){
 
-    while(ready){
-        char* q1 = "\n1. 한 대의 스위치를 여러개의 네트워크로 나누기 위해 사용하는 기술은?\n 답 : _______ LAN\n";
-        char* q2 = "\n2. 목적지와 목적지로 가려면 어느 인터페이스로 가야 하는지의 정보는 Routing _____ 에 기록된다.\n";
-        char* q3 = "\n3. 목적지까지의 거리와 어떤 인접 라우터를 거쳐서 가야하는 지를 저장하는 Vector.\n 답 : ________ Vector\n";
-        char* q4 = "\n4. Link state를 사용하는 Routing Protocol은?\n 답 : ____\n";
-        char* q5 = "\n5. 출발지에서 목적지 뿐만 아니라 중간 경로에 대한 정보와 소요시간을 확인해주는 프로그램의 이름은?\n 답 : _____\n";
+        // Signal to identify the client
+        str_len = recvfrom(host_sock, message, BUF_SIZE, 0, (struct sockaddr*)&client_adr, &client_adr_size);  // ready to recieve data from client
 
-        char* ans1 = "virtual";
-        char* ans2 = "table";
-        char* ans3 = "distance";
-        char* ans4 = "ospf";
-        char* ans5 = "trace";
+        // Send instruction
+        sendto( host_sock, instruction, BUF_SIZE, 0, (struct sockaddr*)&client_adr, client_adr_size );
 
+        setsockopt( host_sock, SOL_SOCKET, SO_RCVTIMEO, (char*)&tv, sizeof(tv) );
+        cur_problem_num = 0;
 
-
-        if(valid1 || (valid1 = question(q1, ans1, host_sock, client_adr))){
-            if(valid2 || (valid2 = question(q2, ans2, host_sock, client_adr))){
-                if(valid3 || (valid3 = question(q3, ans3, host_sock, client_adr))){
-                    if(valid4 || (valid4 = question(q4, ans4, host_sock, client_adr))){
-                        if(valid5 || (valid5 = question(q5, ans5, host_sock, client_adr))){
-                            printf("GOOD JOB!\n");
-                            sendto(host_sock, END_MESSAGE, sizeof(END_MESSAGE), 0, (struct sockaddr*)&client_adr, sizeof(client_adr)); 
-                            break;
-                        }
-                    }
-                }
+        // repeat until all questions are correct or there hasn't reponse for TIME_LIMIT 
+        while( 1 ){
+            if( cur_problem_num == NUM_PROBLEMS ){
+                sendto( host_sock, END_MESSAGE, BUF_SIZE, 0, (struct sockaddr*)&client_adr, client_adr_size );
+                printf("\n\nPASSWORD : %s\n\n", PASSWORD);
+                break;
             }
+
+            // + 1 if correct, else, repeat the question
+            cur_problem_num += question(q_array[cur_problem_num], ans_array[cur_problem_num], host_sock, client_adr);
+
         }
+
+        if(cur_problem_num == NUM_PROBLEMS) break;
+
+        close(host_sock);
     }
-
-    close(host_sock);
-
     return 0;
 }
