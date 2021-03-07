@@ -15,6 +15,7 @@
 #include <pthread.h>
 
 #define MAX_VALUE 1001
+#define PASS "f7a89a"
 
 using namespace std;
 
@@ -149,7 +150,7 @@ void checktime(){
                 else printf("bfs() incorrect\n");
                 
                 if(dfs_valid && bfs_valid) 
-                        printf("Good job!\n\nPassword is 3e4r5t\n");
+                        printf("Good job!\n\nPassword is %s\n", PASS);
         }
         else{
                 printf("time took longer than 2 sec\n");

@@ -1,4 +1,4 @@
-/* TCP/IP 연결
+/* UDP 연결
  *
  * UDP_SERVER는 서버용 프로그램이다.
  * 이에 연결하기 위한 UDP_CLIENT 프로그램을 만들어보자.
@@ -64,12 +64,12 @@ int main(int argc, char *argv[]){
 
     setsockopt( client_sock, SOL_SOCKET, SO_RCVTIMEO, (char*)&tv,  sizeof(tv) );
     // Connect
-    sendto(client_sock, message_from_client, BUF_SIZE, 0, (struct sockaddr*)&serv_adr, sizeof(serv_adr));
+    sendto(/*                                            */));
 
 
     // Receive Instruction from the server
     
-     str_len = recvfrom(client_sock, message_from_client, BUF_SIZE, 0, (struct sockaddr*)&serv_adr, &serv_adr_size);
+     str_len = recvfrom(/*                                                          */);
 
     if(str_len < 0)
         error_handling("Server not responding\n");
@@ -78,7 +78,7 @@ int main(int argc, char *argv[]){
     while(1){
 
         memset(message_from_serv, 0, BUF_SIZE);
-        str_len = recvfrom(client_sock, message_from_serv, BUF_SIZE, 0, (struct sockaddr*)&serv_adr, &serv_adr_size);
+        str_len = recvfrom(/*                                                       */);
 
         if(str_len < 0)
             error_handling("Server not responding\n");
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]){
         printf("%s\n", message_from_serv);
         
         scanf("%s", message_from_client);
-        sendto(client_sock, message_from_client, BUF_SIZE, 0, (struct sockaddr*)&serv_adr, sizeof(serv_adr));
+        sendto(/*                                                       */);
     }
 
 

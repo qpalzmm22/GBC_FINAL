@@ -15,6 +15,7 @@
 #include <pthread.h>
 
 #define MAX 10000
+#define PASS "I'm not well known"
 
 using namespace std;
 
@@ -96,7 +97,7 @@ void checktime(){
                 printf("The algorithm took %lf seconds to finish\n\n", time_taken);
                 
                 if(valid == 1) 
-                        printf("Good job!\n\nPassword is 4r5t6y\n");
+                        printf("Good job!\nThe hint for Final Password is\n\n\"%s\"\n", PASS);
         }
         else{
                 printf("time took longer than 1 sec\n");

@@ -8,7 +8,7 @@
 
 #define MAX 499
 #define ANS 86168291600238450732788312165664788095941068326060883324529903470149056115823592713458328176574447204501
-
+#define PASS "wi1o2p"
 using namespace std;
 
 extern long long fib(long long n);
@@ -45,7 +45,7 @@ void checktime(){
         // Check if the thread is alive
         if(thread_status == 1){
                 if(fib(MAX) == ANS){
-                        printf("Good Job!\nPassword : 1q2w3e\n");
+                        printf("Good Job!\nPassword : %s\n", PASS);
                 }
         }
         else{

@@ -9,6 +9,7 @@
 #include <pthread.h>
 
 #define MAX     10000000
+#define PASS    "ws9f87"
 
 using namespace std;
 
@@ -96,7 +97,7 @@ void checktime(){
         if(thread_status == 1){
                 printf("The algorithm took %lf seconds\n", time_taken);
                 if(valid == 1){
-                        printf("Good Job!\nPassword : 2w3e4r\n");
+                        printf("Good Job!\nPassword : %s\n", PASS);
                 }
         }
         else{

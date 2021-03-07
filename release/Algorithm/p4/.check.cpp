@@ -15,6 +15,7 @@
 #include <pthread.h>
 
 #define MAX_VALUE 1001
+#define PASS "jkjlk2"
 
 using namespace std;
 
@@ -88,7 +89,7 @@ void checktime(){
                 printf("The algorithm took %lf seconds to finish\n\n", time_taken);
                 
                 if(valid == 1) 
-                        printf("Good job!\n\nPassword is 4r5t6y\n");
+                        printf("Good job!\n\nPassword is %s\n", PASS);
         }
         else{
                 printf("time took longer than 2 sec\n");
