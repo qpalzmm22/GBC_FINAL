@@ -8,7 +8,7 @@
 #define BUF_SIZE 300
 #define NUM_PROBLEMS 5
 #define TIME_LIMIT 30
-#define PASSWORD "213131"
+#define PASSWORD "faus12"
 #define END_MESSAGE "FINISH"
 
 void error_handling(char *message);
